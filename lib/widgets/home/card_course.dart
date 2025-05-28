@@ -183,12 +183,12 @@ class CardCourse extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                     children: [
                       Text(
                         '\$$price',
                         style: const TextStyle(
                           color: Color.fromARGB(255, 0, 0, 0),
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'inriaSans',
                         ),
@@ -196,13 +196,13 @@ class CardCourse extends StatelessWidget {
                       Button(
                         text: 'Start',
                         onPressed: () {},
-                        width: 75,
+                        width: 72,
                         height: 22,
                         borderRadius: 8,
                         color: const Color.fromARGB(255, 192, 218, 240),
                         textColor: const Color.fromARGB(255, 73, 142, 210),
-                        fontSize: 10,
-                        iconSize: 10,
+                        fontSize: 8,
+                        iconSize: 8,
                         rightIcon: Icons.arrow_forward,
                       )
                     ],

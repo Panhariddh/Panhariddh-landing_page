@@ -1,12 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:landing_page/widgets/button.dart';
-import 'package:landing_page/widgets/button_nav.dart';
-import 'package:landing_page/widgets/card.dart';
-import 'package:landing_page/widgets/card_course.dart';
-import 'package:landing_page/widgets/card_teacher.dart';
-import 'package:landing_page/widgets/horizontal_category.dart';
-import 'package:landing_page/widgets/information.dart';
+import 'package:landing_page/widgets/footer_widget.dart';
+import 'package:landing_page/widgets/home/app_bar.dart';
+import 'package:landing_page/widgets/home/button_nav.dart';
+import 'package:landing_page/widgets/home/card.dart';
+import 'package:landing_page/widgets/home/card_course.dart';
+import 'package:landing_page/widgets/home/card_teacher.dart';
+import 'package:landing_page/widgets/home/horizontal_category.dart';
+import 'package:landing_page/widgets/home/information.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -16,15 +20,15 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  final PageController _pageController1 = PageController();
-  final PageController _pageController2 = PageController();
-
-  // int _currentPage1 = 0;
+  final PageController _topRowController =
+      PageController(viewportFraction: 0.45);
+  final PageController _bottomRowController =
+      PageController(viewportFraction: 0.45);
 
   @override
   void dispose() {
-    _pageController1.dispose();
-    _pageController2.dispose();
+    _topRowController.dispose();
+    _bottomRowController.dispose();
     super.dispose();
   }
 
@@ -35,52 +39,26 @@ class _LandingScreenState extends State<LandingScreen> {
     'Web Development',
   ];
 
-  final List<String> somethingLeft = [
-    'About Us',
-    'Contact Us',
-    'FaQs',
-    'Community Forum',
-    'Term of Service',
-    'Careers',
-    'Leadership',
-    'Blog'
-  ];
-
-  final List<String> somethingRight = [
-    'Social Impact',
-    'Cookies Setting',
-    'Terms',
-    'Accessibility Statement',
-    'Investors',
-    'GO Pro Course',
-    'Affiliate'
-  ];
-
-  final List<ImageProvider> imageList = [
-    const AssetImage('assets/images/facebook.png'),
-    const AssetImage('assets/images/linkedin.png'),
-    const AssetImage('assets/images/youtube.png'),
-  ];
-
   int _selectedIndex = 0;
   int _selectedCategoryIndex = 0;
 
-  final Map<String, List<CardCourse>> _coursesByCategory = {
-    'Artificial Intelligent': [
-      const CardCourse(),
-      const CardCourse(),
-      const CardCourse(),
-    ],
-    'Machine Learning': [
-      const CardCourse(),
-      const CardCourse(),
-      const CardCourse(),
-    ],
-    'Self Development': [
-      const CardCourse(),
-      const CardCourse(),
-      const CardCourse(),
-    ],
+  final Map<String, List<Widget>> _coursesByCategory = {
+    'Artificial Intelligent': List.generate(
+      10,
+      (index) => const CardCourse(title: 'Artificial Intelligence'),
+    ),
+    'Machine Learning': List.generate(
+      5,
+      (index) => const CardCourse(title: 'Machine Learning'),
+    ),
+    'Self Development': List.generate(
+      5,
+      (index) => const CardCourse(title: 'Self Development'),
+    ),
+    'Web Development': List.generate(
+      5,
+      (index) => const CardCourse(title: 'Web Development'),
+    ),
   };
 
   final List<Map<String, dynamic>> informationList = [
@@ -142,48 +120,35 @@ class _LandingScreenState extends State<LandingScreen> {
     setState(() {
       _selectedIndex = index;
     });
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/');
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/myCourses');
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/onlineCourses');
+        break;
+      case 3:
+        Navigator.pushReplacementNamed(context, '/category');
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leadingWidth: 150,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 12),
-            child: SizedBox(
-              width: 150,
-              height: 40,
-              child: Image.asset(
-                'assets/images/logo.png',
-                fit: BoxFit.contain,
-                width: 150,
-                height: 40, // no scaling at all
-              ),
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search, size: 24),
-              onPressed: () {},
-              color: const Color(0xFF164F89),
-            ),
-            IconButton(
-              icon: const Icon(Icons.person, size: 24),
-              onPressed: () {},
-              color: const Color(0xFF164F89),
-            ),
-          ],
-        ),
-      ),
+
+      // App Bar
+      appBar: const AppBarComponent(),
+
+      // Body
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(top: 40, left: 20, right: 20),
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
           child: Column(
             children: [
               Center(
@@ -238,7 +203,7 @@ class _LandingScreenState extends State<LandingScreen> {
               Button(
                 text: "Explore Courses",
                 onPressed: () {},
-                width: 180,
+                width: 160,
                 height: 40,
                 borderRadius: 30,
                 leftIcon: Icons.book,
@@ -270,28 +235,22 @@ class _LandingScreenState extends State<LandingScreen> {
                     color: Color(0xFF2F2F2F)),
               ),
               const SizedBox(height: 40),
-              // Replace the existing Row with this:
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const CustomCard(
-                      title: 'Expert Instructors',
-                      image: AssetImage('assets/images/instructor.png'),
-                    ),
-                    const SizedBox(width: 20),
-                    const CustomCard(
-                      title: 'Flexible Learning',
-                      image: AssetImage('assets/images/learning.png'),
-                    ),
-                    const SizedBox(width: 20),
-                    const CustomCard(
-                      title: 'Hands-On Learning',
-                      image: AssetImage('assets/images/handson.png'),
-                    ),
-                  ],
-                ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomCard(
+                    title: 'Expert Instructors',
+                    image: AssetImage('assets/images/instructor.png'),
+                  ),
+                  CustomCard(
+                    title: 'Flexible Learning',
+                    image: AssetImage('assets/images/learning.png'),
+                  ),
+                  CustomCard(
+                    title: 'Hands-On Learning',
+                    image: AssetImage('assets/images/handson.png'),
+                  ),
+                ],
               ),
               const SizedBox(height: 60),
               const Text(
@@ -314,75 +273,93 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               const SizedBox(height: 20),
               SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount:
-                      _coursesByCategory[categories[_selectedCategoryIndex]]
-                              ?.length ??
-                          0,
-                  itemBuilder: (context, index) {
-                    final course = _coursesByCategory[
-                        categories[_selectedCategoryIndex]]![index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: course,
-                    );
-                  },
+                child: Column(
+                  children: [
+                    // First row
+                    SizedBox(
+                      height: 300,
+                      child: PageView.builder(
+                        controller: _topRowController,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: min(
+                            5,
+                            _coursesByCategory[
+                                        categories[_selectedCategoryIndex]]
+                                    ?.length ??
+                                0),
+                        padEnds: false,
+                        itemBuilder: (context, index) {
+                          final course = _coursesByCategory[
+                              categories[_selectedCategoryIndex]]![index];
+                          return SizedBox(width: 170, child: course);
+                        },
+                      ),
+                    ),
+
+                    // Second row (if more than 5 items)
+                    if ((_coursesByCategory[categories[_selectedCategoryIndex]]
+                                ?.length ??
+                            0) >
+                        5)
+                      Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            height: 300,
+                            child: PageView.builder(
+                              controller: _bottomRowController,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: min(
+                                  5,
+                                  (_coursesByCategory[categories[
+                                                  _selectedCategoryIndex]]
+                                              ?.length ??
+                                          0) -
+                                      5),
+                              padEnds: false,
+                              itemBuilder: (context, index) {
+                                final course = _coursesByCategory[categories[
+                                    _selectedCategoryIndex]]![index + 5];
+                                return SizedBox(width: 170, child: course);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    const SizedBox(height: 12),
+
+                    SmoothPageIndicator(
+                      controller: _topRowController,
+                      count: min(
+                              5,
+                              _coursesByCategory[
+                                          categories[_selectedCategoryIndex]]
+                                      ?.length ??
+                                  0) +
+                          ((_coursesByCategory[categories[
+                                              _selectedCategoryIndex]]
+                                          ?.length ??
+                                      0) >
+                                  5
+                              ? min(
+                                  5,
+                                  (_coursesByCategory[categories[
+                                                  _selectedCategoryIndex]]
+                                              ?.length ??
+                                          0) -
+                                      5)
+                              : 0),
+                      effect: const WormEffect(
+                        dotHeight: 8,
+                        dotWidth: 8,
+                        activeDotColor: Color(0xFFFF7A00),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount:
-                      _coursesByCategory[categories[_selectedCategoryIndex]]
-                              ?.length ??
-                          0,
-                  itemBuilder: (context, index) {
-                    final course = _coursesByCategory[
-                        categories[_selectedCategoryIndex]]![index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: course,
-                    );
-                  },
-                ),
-              ),
-              // SizedBox(
-              //   height: 300,
-              //   child: PageView.builder(
-              //     controller: _pageController1,
-              //     itemCount:
-              //         _coursesByCategory[categories[_selectedCategoryIndex]]
-              //                 ?.length ??
-              //             0,
-              //     onPageChanged: (index) {
-              //       setState(() {
-              //         _currentPage1 = index;
-              //       });
-              //     },
-              //     itemBuilder: (context, index) {
-              //       final course = _coursesByCategory[
-              //           categories[_selectedCategoryIndex]]![index];
-              //       return Padding(
-              //         padding: const EdgeInsets.only(right: 20),
-              //         child: course,
-              //       );
-              //     },
-              //   ),
-              // ),
-              const SizedBox(height: 10),
-              Center(
-                child: SmoothPageIndicator(
-                  controller: _pageController1,
-                  count: _coursesByCategory[categories[_selectedCategoryIndex]]
-                          ?.length ??
-                      0,
-                  effect: const WormEffect(dotHeight: 8, dotWidth: 8),
-                ),
-              ),
+
               const SizedBox(height: 60),
               const Text(
                 'Meet Our Teachers',
@@ -393,33 +370,27 @@ class _LandingScreenState extends State<LandingScreen> {
                     color: Color(0xFF2F2F2F)),
               ),
               const SizedBox(height: 20),
-             // Replace with:
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const CardTeacher(
-                        name: "Dr. VALY Dona",
-                        image: AssetImage('assets/images/dona.jpg'),
-                        position: "Researcher, AI Specialist"),
-                    const SizedBox(width: 20),
-                    const CardTeacher(
-                        name: "HOK Tin",
-                        image: AssetImage('assets/images/tin.jpg'),
-                        position: "Web Developer"),
-                    const SizedBox(width: 20),
-                    const CardTeacher(
-                        name: "HENG Rathpisey",
-                        image: AssetImage('assets/images/sey.jpg'),
-                        position: "Lecturer at ITC"),
-                  ],
-                ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CardTeacher(
+                      name: "Dr. VALY Dona",
+                      image: AssetImage('assets/images/dona.jpg'),
+                      position: "Researcher, AI Specialist"),
+                  CardTeacher(
+                      name: "HOK Tin",
+                      image: AssetImage('assets/images/tin.jpg'),
+                      position: "Web Developer"),
+                  CardTeacher(
+                      name: "HENG Rathpisey",
+                      image: AssetImage('assets/images/sey.jpg'),
+                      position: "Lecturer at ITC"),
+                ],
               ),
               const SizedBox(height: 60),
-              // Replace with:
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const Icon(
                     Icons.arrow_forward_ios_rounded,
@@ -427,7 +398,7 @@ class _LandingScreenState extends State<LandingScreen> {
                     color: Color(0xFFFF7A00),
                   ),
                   Transform.translate(
-                    offset: const Offset(-20, 0),
+                    offset: const Offset(-20, 0), // shift left by 10 pixels
                     child: const Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 40,
@@ -435,7 +406,8 @@ class _LandingScreenState extends State<LandingScreen> {
                     ),
                   ),
                   Transform.translate(
-                    offset: const Offset(-40, 0),
+                    offset: const Offset(
+                        -40, 0), // shift even more for tighter overlap
                     child: const Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 40,
@@ -454,9 +426,15 @@ class _LandingScreenState extends State<LandingScreen> {
                           fontFamily: 'inriaSans',
                         ),
                         children: [
-                          TextSpan(text: ' \n'),
-                          WidgetSpan(child: SizedBox(height: 30)),
-                          TextSpan(text: 'what we can share with you today'),
+                          TextSpan(
+                            text: ' \n',
+                          ),
+                          WidgetSpan(
+                            child: SizedBox(height: 30),
+                          ),
+                          TextSpan(
+                            text: 'what we can share with you today',
+                          ),
                         ],
                       ),
                     ),
@@ -536,108 +514,10 @@ class _LandingScreenState extends State<LandingScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left Column
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: somethingLeft
-                        .map(
-                          (item) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                                fontFamily: 'inriaSans',
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
+              const SizedBox(height: 30),
 
-                  // Right Column
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: somethingRight
-                        .map(
-                          (item) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                                fontFamily: 'inriaSans',
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 40),
-              const Column(
-                children: [
-                  Center(
-                    child: Text(
-                      'Certified',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                        fontFamily: 'inriaSans',
-                      ),
-                    ),
-                  ),
-                  Image(
-                    image: AssetImage('assets/images/itc_logo.png'),
-                    width: 200,
-                    height: 200,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 60),
-              // Replace with:
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8,
-                runSpacing: 8,
-                children: imageList
-                    .map(
-                      (item) => Image(
-                        image: item,
-                        width: 40,
-                        height: 40,
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 40),
-              // Replace the Row with a Wrap widget
-              Wrap(
-                alignment: WrapAlignment.center,
-                children: const [
-                  Text(
-                    'Copyright © 2025 Worktency, Inc. All rights reserved.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black87,
-                      fontFamily: 'inriaSans',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+              // Footer
+              FooterWidget()
             ],
           ),
         ),
