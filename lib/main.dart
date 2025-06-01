@@ -4,6 +4,7 @@ import 'package:landing_page/screens/landing_screen.dart';
 import 'package:landing_page/screens/my_course_screen.dart';
 import 'package:landing_page/screens/online_course_screen.dart';
 import 'package:landing_page/screens/search_screen.dart';
+import 'package:landing_page/screens/auth/login.screen.dart';
 
 
 void main() {
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/':
+            return _createRoute(const LoginScreen());
           case '/explore':
             return _createRoute(const LandingScreen());
           case '/search':
